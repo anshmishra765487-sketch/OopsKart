@@ -1,0 +1,313 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/*  OopsKart theme tokens (Tailwind v4 @theme)                        */
+/* ------------------------------------------------------------------ */
+@theme {
+  --color-navy: #0a1424;
+  --color-navy-900: #060d18;
+  --color-navy-800: #101f38;
+  --color-navy-700: #17294a;
+  --color-navy-600: #223a63;
+
+  --color-brand: #ff6b00;
+  --color-brand-soft: #ff8a3d;
+  --color-acid: #c6f000;
+  --color-acid-soft: #dcff6a;
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Base                                                              */
+/* ------------------------------------------------------------------ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-navy);
+    color: #e8eefc;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-acid);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Utilities                                                         */
+/* ------------------------------------------------------------------ */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 22px rgba(255, 107, 0, 0.55);
+  }
+
+  .animate-marquee {
+    animation: oops-marquee 30s linear infinite;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Keyframes                                                         */
+/* ------------------------------------------------------------------ */
+@keyframes oops-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes oops-wobble {
+  0%,
+  100% {
+    transform: rotate(-0.7deg);
+  }
+  50% {
+    transform: rotate(0.7deg);
+  }
+}
+
+@keyframes oops-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(8deg);
+  }
+}
+
+@keyframes oops-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+@keyframes oops-hue {
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes oops-drift {
+  0% {
+    transform: translateY(110vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-15vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes oops-pop {
+  0% {
+    transform: translateY(12px) scale(0.92);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.oops-pop {
+  animation: oops-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes oops-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.oops-slide-in {
+  animation: oops-slide-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes oops-bump {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.35) rotate(-8deg);
+  }
+  60% {
+    transform: scale(0.9) rotate(6deg);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.oops-bump {
+  animation: oops-bump 0.5s ease;
+}
+
+@keyframes oops-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+.oops-shake {
+  animation: oops-shake 0.45s ease;
+}
+
+@keyframes oops-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.oops-spin {
+  animation: oops-spin 1.2s linear infinite;
+}
+
+@keyframes oops-flip {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Chaos Level effects                                               */
+/*  data-chaos="1..5" is set on <html> only when Chaos Mode is ON.     */
+/*  All effects are cosmetic. Controls stay put and keyboard-usable.   */
+/* ------------------------------------------------------------------ */
+[data-chaos="2"] .product-card:nth-child(odd) {
+  transform: rotate(-0.6deg);
+}
+[data-chaos="2"] .product-card:nth-child(even) {
+  transform: rotate(0.7deg);
+}
+
+[data-chaos="3"] .product-card {
+  animation: oops-wobble 3.4s ease-in-out infinite;
+}
+[data-chaos="3"] .chaos-btn {
+  animation: oops-pulse 1.9s ease-in-out infinite;
+}
+[data-chaos="3"] .chaos-image {
+  animation: oops-float 5s ease-in-out infinite;
+}
+
+[data-chaos="4"] .product-card {
+  animation: oops-wobble 2.3s ease-in-out infinite;
+}
+[data-chaos="4"] .chaos-heading {
+  animation: oops-wobble 4.5s ease-in-out infinite;
+}
+[data-chaos="4"] .chaos-image {
+  animation: oops-float 4s ease-in-out infinite;
+}
+[data-chaos="4"] .chaos-btn {
+  animation: oops-pulse 1.4s ease-in-out infinite;
+}
+
+[data-chaos="5"] .product-card {
+  animation: oops-wobble 1.5s ease-in-out infinite;
+}
+[data-chaos="5"] .chaos-heading {
+  animation: oops-wobble 2.8s ease-in-out infinite;
+}
+[data-chaos="5"] .chaos-image {
+  animation: oops-float 2.6s ease-in-out infinite, oops-hue 14s linear infinite;
+}
+[data-chaos="5"] .chaos-btn {
+  animation: oops-pulse 1s ease-in-out infinite;
+}
+
+/* "Ulta" mode: decorative emojis flip upside-down at high chaos */
+[data-chaos="4"] .chaos-flip {
+  animation: oops-flip 5s ease-in-out infinite;
+}
+[data-chaos="5"] .chaos-flip {
+  animation: oops-flip 2.4s ease-in-out infinite;
+}
+
+/* Mischief: swapped buttons get a playful shake-in */
+[data-chaos="4"] .chaos-swapped,
+[data-chaos="5"] .chaos-swapped {
+  box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.5);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Accessibility: honour reduced-motion preferences                  */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-chaos] .product-card,
+  [data-chaos] .chaos-btn,
+  [data-chaos] .chaos-heading,
+  [data-chaos] .chaos-image,
+  .chaos-float,
+  .chaos-flip,
+  .animate-marquee,
+  .oops-pop,
+  .oops-slide-in,
+  .oops-bump,
+  .oops-shake,
+  .oops-spin {
+    animation: none !important;
+    transform: none !important;
+  }
+}
