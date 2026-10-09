@@ -12,11 +12,16 @@ const STORAGE_KEY = 'oopskart.sound.v1';
 const SoundContext = createContext(null);
 
 /** Your meme clips, served from /public/media. */
+const MEDIA = `${import.meta.env.BASE_URL}media/`;
 const FILES = {
-  chalo: '/media/chalo.mpeg',
-  chaloo: '/media/chaloo.mpeg',
-  nhi: '/media/nhiinhii.mpeg',
+  chalo: `${MEDIA}chalo.mpeg`,
+  chaloo: `${MEDIA}chaloo.mpeg`,
+  nhi: `${MEDIA}nhiinhii.mpeg`,
 };
+
+/** Background music: a real song if you drop one in, otherwise the clip playlist. */
+const SONG_URL = `${MEDIA}song.mp3`;
+const MUSIC_FILES = [FILES.chalo, FILES.chaloo, FILES.nhi];
 
 /** A tiny looping "chiptune" for background music (no files needed). */
 const MELODY = [440, 523.25, 659.25, 523.25, 587.33, 493.88, 392, 440];
@@ -38,6 +43,9 @@ export function SoundProvider({ children }) {
   const ctxRef = useRef(null);
   const audioRef = useRef({});
   const musicTimerRef = useRef(null);
+  const musicAudioRef = useRef(null);
+  const songOkRef = useRef(null);
+  const musicTokenRef = useRef(0);
 
   useEffect(() => {
     try {
@@ -151,13 +159,34 @@ export function SoundProvider({ children }) {
   );
 
   const stopMusic = useCallback(() => {
+    musicTokenRef.current += 1;
     if (musicTimerRef.current) {
       window.clearInterval(musicTimerRef.current);
       musicTimerRef.current = null;
     }
+    const audio = musicAudioRef.current;
+    if (audio) {
+      musicAudioRef.current = null;
+      audio.onended = null;
+      audio.onerror = null;
+      audio.pause();
+    }
   }, []);
 
-  const startMusic = useCallback(() => {
+  const probeSong = useCallback(() => {
+    if (songOkRef.current !== null) return Promise.resolve(songOkRef.current);
+    return fetch(SONG_URL, { method: 'HEAD' })
+      .then((r) => {
+        songOkRef.current = r.ok;
+        return r.ok;
+      })
+      .catch(() => {
+        songOkRef.current = false;
+        return false;
+      });
+  }, []);
+
+  const startSynthMusic = useCallback(() => {
     const ctx = getCtx();
     if (!ctx) return;
     stopMusic();
@@ -191,6 +220,44 @@ export function SoundProvider({ children }) {
     tick();
     musicTimerRef.current = window.setInterval(tick, beat * 4 * 1000);
   }, [getCtx, tone, stopMusic]);
+
+  const startMusic = useCallback(async () => {
+    stopMusic();
+    const token = musicTokenRef.current;
+    const hasSong = await probeSong();
+    if (token !== musicTokenRef.current) return;
+    const playlist = hasSong ? [SONG_URL, ...MUSIC_FILES] : MUSIC_FILES;
+    const audio = new Audio();
+    audio.volume = 0.55;
+    musicAudioRef.current = audio;
+    let index = 0;
+    let failures = 0;
+    let songActive = hasSong;
+    const playNext = () => {
+      if (musicAudioRef.current !== audio) return;
+      audio.src = playlist[index % playlist.length];
+      index += 1;
+      const p = audio.play();
+      if (!p || typeof p.catch !== 'function') return;
+      p.then(() => {
+        failures = 0;
+      }).catch(() => {
+        failures += 1;
+        if (index === 1) songActive = false;
+        if (failures >= playlist.length) {
+          musicAudioRef.current = null;
+          startSynthMusic();
+        } else {
+          playNext();
+        }
+      });
+    };
+    audio.onended = () => {
+      if (songActive) index = 0;
+      playNext();
+    };
+    playNext();
+  }, [stopMusic, probeSong, startSynthMusic]);
 
   const toggleMusic = useCallback(() => {
     const next = !musicOn;
