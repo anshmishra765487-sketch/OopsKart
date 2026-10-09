@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   LogIn,
   LogOut,
+  Menu,
   Music2,
   Music,
   Search,
