@@ -10,12 +10,14 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { DEMO_ACCOUNT, useAuth } from '../hooks/useAuth.jsx';
+import { useSound } from '../hooks/useSound.jsx';
 
 const inputClass =
   'w-full rounded-xl border border-white/15 bg-navy-900/70 px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-brand focus:outline-none';
 
 export default function Login() {
   const { user, login, signup, logout } = useAuth();
+  const { play } = useSound();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
@@ -36,6 +38,7 @@ export default function Login() {
       return;
     }
     setError('');
+    play('extra');
     navigate(redirectTo);
   };
 
